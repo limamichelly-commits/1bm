@@ -1,37 +1,36 @@
-using System.Collections.Generic;using UnityEngine;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class AudioManager : MonoBehaviour
 {
     #region Private Fields
-       
-       private List<AudioSource> systemSourceChannels;
-       private List<AudioSource> ActiveSources;
-       
-       #endregion
-       
-    #region Singleton 
-    public static AudioManager instance;
+    private List<AudioSource> systemSourceChannels;
+    private List<AudioSource> activeSources;
     
+    #endregion
+    
+    #region Singleton
+    public static AudioManager Instance;
+
     private void Awake()
     {
-        if (instance == null)
+        if (Instance == null)
         {
-            instance = this;
+            Instance = this;
             DontDestroyOnLoad(gameObject);
             systemSourceChannels = new List<AudioSource>();
-            ActiveSources = new List<AudioSource>();
+            activeSources = new List<AudioSource>();
         }
         else
         {
             Destroy(gameObject);
         }
     }
-
-    #endregion
+    #endregion  
     
-    #region Play 2D Sonds
+    #region Play 2D Sounds
 
-    public void playMusic(AudioClip clip)
+    public void PlayMusic(AudioClip clip)
     {
         if (systemSourceChannels.Count == 0)
         {
@@ -48,10 +47,17 @@ public class AudioManager : MonoBehaviour
         {
             systemSourceChannels[0].Stop();
         }
-            
     }
 
-    public void pauseMusic()
+    public void PauseMusic()
+    {
+        if (systemSourceChannels.Count > 0)
+        {
+            systemSourceChannels[0].Pause();
+        }
+    }
+    
+    public void ResumeMusic()
     {
         if (systemSourceChannels.Count > 0)
         {
@@ -67,6 +73,40 @@ public class AudioManager : MonoBehaviour
         }
         systemSourceChannels[0].PlayOneShot(clip);
     }
+    
+    public void PlayAmbiente(AudioClip clip)
+    {
+        if (systemSourceChannels.Count < 2)
+        {
+            systemSourceChannels.Add(gameObject.AddComponent<AudioSource>());
+        }
+        systemSourceChannels[1].Stop();
+        systemSourceChannels[1].clip = clip;
+        systemSourceChannels[1].Play();
+    }
+
+    public void StopAmbiente()
+    {
+        if (systemSourceChannels.Count >= 2)
+        {
+            systemSourceChannels[1].Stop();
+        }
+    }
+
+    public void PauseAmbiente()
+    {
+        if (systemSourceChannels.Count >= 2)
+        {
+            systemSourceChannels[1].Pause();
+        }
+    }
+    
+    public void ResumeAmbiente()
+    {
+        if (systemSourceChannels.Count >= 2)
+        {
+            systemSourceChannels[1].UnPause();
+        }
+    }
     #endregion
 }
-   
